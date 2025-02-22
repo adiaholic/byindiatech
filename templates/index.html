@@ -13,16 +13,16 @@
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
-            position: relative; /* Ensure the body is the positioning context */
+            position: relative;
         }
         h1 {
             color: #333;
         }
         .floating-button {
-            position: fixed; /* Position relative to the viewport */
-            bottom: 20px; /* Distance from the bottom */
-            left: 50%; /* Center horizontally */
-            transform: translateX(-50%); /* Adjust for exact centering */
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             background-color: orange;
             color: white;
             border: none;
@@ -31,15 +31,36 @@
             border-radius: 30px;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             cursor: pointer;
-            z-index: 1000; /* Ensure it appears above other elements */
+            z-index: 1000;
         }
         .floating-button:hover {
             background-color: darkorange;
         }
     </style>
+    <!-- Include the js-confetti library -->
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
 </head>
 <body>
     <h1>From India to the World</h1>
     <button class="floating-button">Y Combinator startups from India</button>
+
+    <script>
+        // Initialize the jsConfetti instance
+        const jsConfetti = new JSConfetti();
+
+        // Function to trigger confetti
+        function triggerConfetti() {
+            jsConfetti.addConfetti({
+                confettiColors: [
+                    '#ff0a54', '#ff477e', '#ff7096',
+                    '#ff85a1', '#fbb1bd', '#f9bec7'
+                ],
+                confettiNumber: 150,
+            });
+        }
+
+        // Trigger confetti when the page loads
+        window.onload = triggerConfetti;
+    </script>
 </body>
 </html>
