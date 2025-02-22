@@ -89,23 +89,6 @@
     </div>
 
     <script>
-        // Sample data for startups
-        const startups = [
-            {
-                name: "Startup One",
-                yc_batch: "W21",
-                team_size: "10",
-                website: "https://startupone.com"
-            },
-            {
-                name: "Startup Two",
-                yc_batch: "S20",
-                team_size: "20",
-                website: "https://startuptwo.com"
-            },
-            // Add more startups as needed
-        ];
-
         // Initialize the jsConfetti instance
         const jsConfetti = new JSConfetti();
 
@@ -123,28 +106,49 @@
         // Trigger confetti when the page loads
         window.onload = triggerConfetti;
 
+        // Function to fetch startup data from the backend
+        async function fetchStartups() {
+            try {
+                const response = await fetch('/api/startups');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const startups = await response.json();
+                return startups;
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
         // Function to populate the dropdown with startup data
-        function populateDropdown() {
+        async function populateDropdown() {
             const startupList = document.getElementById('startupList');
             startupList.innerHTML = ''; // Clear existing items
 
-            startups.forEach(startup => {
+            const startups = await fetchStartups();
+            if (startups && startups.length > 0) {
+                startups.forEach(startup => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <strong>${startup.name}</strong><br>
+                        YC Batch: ${startup.yc_batch}<br>
+                        Team Size: ${startup.team_size}<br>
+                        <a href="${startup.website}" target="_blank">${startup.website}</a>
+                    `;
+                    startupList.appendChild(listItem);
+                });
+            } else {
                 const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                    <strong>${startup.name}</strong><br>
-                    YC Batch: ${startup.yc_batch}<br>
-                    Team Size: ${startup.team_size}<br>
-                    <a href="${startup.website}" target="_blank">${startup.website}</a>
-                `;
+                listItem.textContent = 'No startups found.';
                 startupList.appendChild(listItem);
-            });
+            }
         }
 
         // Function to toggle the dropdown visibility with animation
-        function toggleDropdown() {
+        async function toggleDropdown() {
             const dropdown = document.getElementById('dropdownContainer');
             if (dropdown.style.maxHeight === '0px' || !dropdown.style.maxHeight) {
-                populateDropdown();
+                await populateDropdown();
                 dropdown.style.maxHeight = '500px'; // Adjust based on content height
             } else {
                 dropdown.style.maxHeight = '0';
@@ -158,9 +162,14 @@
         window.addEventListener('click', function(event) {
             const dropdown = document.getElementById('dropdownContainer');
             const button = document.querySelector('.floating-button');
-            if (event.target !== dropdown && event.target !== button && !dropdown.contains(event.target)) {
+            if (!dropdown.contains(event.target) && event.target !== button) {
                 dropdown.style.maxHeight = '0';
             }
+        });
+
+        // Prevent closing dropdown when clicking inside
+        document.getElementById('dropdownContainer').addEventListener('click', function(event) {
+            event.stopPropagation();
         });
     </script>
 </body>
