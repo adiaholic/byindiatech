@@ -7,6 +7,7 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -36,6 +37,42 @@
         .floating-button:hover {
             background-color: darkorange;
         }
+        /* Dropdown Container */
+        .dropdown-container {
+            max-height: 0;
+            overflow: hidden;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 600px;
+            background-color: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            z-index: 1001;
+            transition: max-height 0.5s ease-in-out;
+        }
+        /* Dropdown List Items */
+        .dropdown-container ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .dropdown-container li {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .dropdown-container li:last-child {
+            border-bottom: none;
+        }
+        .dropdown-container a {
+            text-decoration: none;
+            color: #333;
+        }
+        .dropdown-container a:hover {
+            text-decoration: underline;
+        }
     </style>
     <!-- Include the js-confetti library -->
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
@@ -44,7 +81,31 @@
     <h1>From India to the World</h1>
     <button class="floating-button">Y Combinator startups from India</button>
 
+    <!-- Dropdown Container -->
+    <div class="dropdown-container" id="dropdownContainer">
+        <ul id="startupList">
+            <!-- Startup items will be injected here -->
+        </ul>
+    </div>
+
     <script>
+        // Sample data for startups
+        const startups = [
+            {
+                name: "Startup One",
+                yc_batch: "W21",
+                team_size: "10",
+                website: "https://startupone.com"
+            },
+            {
+                name: "Startup Two",
+                yc_batch: "S20",
+                team_size: "20",
+                website: "https://startuptwo.com"
+            },
+            // Add more startups as needed
+        ];
+
         // Initialize the jsConfetti instance
         const jsConfetti = new JSConfetti();
 
@@ -61,6 +122,46 @@
 
         // Trigger confetti when the page loads
         window.onload = triggerConfetti;
+
+        // Function to populate the dropdown with startup data
+        function populateDropdown() {
+            const startupList = document.getElementById('startupList');
+            startupList.innerHTML = ''; // Clear existing items
+
+            startups.forEach(startup => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <strong>${startup.name}</strong><br>
+                    YC Batch: ${startup.yc_batch}<br>
+                    Team Size: ${startup.team_size}<br>
+                    <a href="${startup.website}" target="_blank">${startup.website}</a>
+                `;
+                startupList.appendChild(listItem);
+            });
+        }
+
+        // Function to toggle the dropdown visibility with animation
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownContainer');
+            if (dropdown.style.maxHeight === '0px' || !dropdown.style.maxHeight) {
+                populateDropdown();
+                dropdown.style.maxHeight = '500px'; // Adjust based on content height
+            } else {
+                dropdown.style.maxHeight = '0';
+            }
+        }
+
+        // Attach event listener to the button
+        document.querySelector('.floating-button').addEventListener('click', toggleDropdown);
+
+        // Close the dropdown if clicked outside
+        window.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('dropdownContainer');
+            const button = document.querySelector('.floating-button');
+            if (event.target !== dropdown && event.target !== button && !dropdown.contains(event.target)) {
+                dropdown.style.maxHeight = '0';
+            }
+        });
     </script>
 </body>
 </html>
