@@ -6,27 +6,27 @@ app = Flask(__name__)
 csrf = CSRFProtect(app)
 
 
-# Configure SQLite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# # Configure SQLite database
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 
-# Define the YcStartup model
-class YcStartup(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    yc_batch = db.Column(db.String(50), nullable=False)
-    funding = db.Column(db.String(50))
-    team_size = db.Column(db.String(50))
-    linkedin = db.Column(db.String(200))
+# # Define the YcStartup model
+# class YcStartup(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(100), nullable=False)
+#     yc_batch = db.Column(db.String(50), nullable=False)
+#     funding = db.Column(db.String(50))
+#     team_size = db.Column(db.String(50))
+#     linkedin = db.Column(db.String(200))
 
-    def __repr__(self):
-        return f'<YcStartup {self.name}>'
+#     def __repr__(self):
+#         return f'<YcStartup {self.name}>'
 
-# Initialize the database
-with app.app_context():
-    db.create_all()
+# # Initialize the database
+# with app.app_context():
+#     db.create_all()
 
 @app.route("/")
 def home():
