@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>From India to the World</title>
     <style>
+        /* Global Styles */
         body {
             display: flex;
             flex-direction: column;
@@ -12,13 +13,16 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
             position: relative;
         }
         h1 {
             color: #333;
+            font-size: 2rem;
         }
+
+        /* Floating Button */
         .floating-button {
             position: fixed;
             bottom: 20px;
@@ -29,30 +33,41 @@
             border: none;
             padding: 15px 30px;
             font-size: 16px;
+            font-weight: bold;
             border-radius: 30px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             z-index: 1000;
+            transition: all 0.3s ease;
         }
         .floating-button:hover {
-            background-color: darkorange;
+            background-color: orange;
+            transform: translateX(-50%) scale(1.05);
         }
+
         /* Dropdown Container */
         .dropdown-container {
-            max-height: 0;
-            overflow: hidden;
             position: fixed;
-            top: 20px;
+            top: 10%;
             left: 50%;
             transform: translateX(-50%);
             width: 80%;
-            max-width: 600px;
-            background-color: white;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            max-width: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
             z-index: 1001;
-            transition: max-height 0.5s ease-in-out;
+            padding: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
         }
+        .dropdown-container.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(10px);
+        }
+
         /* Dropdown List Items */
         .dropdown-container ul {
             list-style-type: none;
@@ -60,21 +75,50 @@
             margin: 0;
         }
         .dropdown-container li {
-            padding: 15px;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 12px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
         }
-        .dropdown-container li:last-child {
-            border-bottom: none;
+        .dropdown-container li:hover {
+            transform: scale(1.02);
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.15);
         }
-        .dropdown-container a {
+
+        /* Startup Name */
+        .startup-name {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        /* Startup Details */
+        .startup-details {
+            font-size: 0.85rem;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        /* Website Link */
+        .startup-website {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 4px 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: white;
+            background-color: #007bff;
+            border-radius: 20px;
             text-decoration: none;
-            color: #333;
+            transition: background 0.3s ease;
         }
-        .dropdown-container a:hover {
-            text-decoration: underline;
+        .startup-website:hover {
+            background-color: #0056b3;
         }
     </style>
-    <!-- Include the js-confetti library -->
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
 </head>
 <body>
@@ -89,51 +133,44 @@
     </div>
 
     <script>
-        // Initialize the jsConfetti instance
+        // Initialize jsConfetti
         const jsConfetti = new JSConfetti();
 
-        // Function to trigger confetti
-        function triggerConfetti() {
+        // Trigger confetti on page load
+        window.onload = function() {
             jsConfetti.addConfetti({
-                confettiColors: [
-                    '#ff0a54', '#ff477e', '#ff7096',
-                    '#ff85a1', '#fbb1bd', '#f9bec7'
-                ],
-                confettiNumber: 150,
+                confettiColors: ['#007bff', '#00c851', '#ffbb33', '#ff4444'],
+                confettiNumber: 100,
             });
-        }
+        };
 
-        // Trigger confetti when the page loads
-        window.onload = triggerConfetti;
-
-        // Function to fetch startup data from the backend
+        // Fetch startup data from backend
         async function fetchStartups() {
             try {
                 const response = await fetch('/api/startups');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                const startups = await response.json();
-                return startups;
+                return await response.json();
             } catch (error) {
-                console.error('There was a problem with the fetch operation:', error);
+                console.error('Error fetching data:', error);
+                return [];
             }
         }
 
-        // Function to populate the dropdown with startup data
+        // Populate Dropdown with Startups
         async function populateDropdown() {
             const startupList = document.getElementById('startupList');
             startupList.innerHTML = ''; // Clear existing items
 
             const startups = await fetchStartups();
-            if (startups && startups.length > 0) {
+            if (startups.length > 0) {
                 startups.forEach(startup => {
                     const listItem = document.createElement('li');
                     listItem.innerHTML = `
-                        <strong>${startup.name}</strong><br>
-                        YC Batch: ${startup.yc_batch}<br>
-                        Team Size: ${startup.team_size}<br>
-                        <a href="${startup.website}" target="_blank">${startup.website}</a>
+                        <div class="startup-name">${startup.name}</div>
+                        <div class="startup-details">YC Batch: ${startup.yc_batch} | Team Size: ${startup.team_size}</div>
+                        <a href="${startup.website}" target="_blank" class="startup-website">Visit Website</a>
                     `;
                     startupList.appendChild(listItem);
                 });
@@ -144,26 +181,24 @@
             }
         }
 
-        // Function to toggle the dropdown visibility with animation
+        // Toggle Dropdown Visibility
         async function toggleDropdown() {
             const dropdown = document.getElementById('dropdownContainer');
-            if (dropdown.style.maxHeight === '0px' || !dropdown.style.maxHeight) {
-                await populateDropdown();
-                dropdown.style.maxHeight = '500px'; // Adjust based on content height
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
             } else {
-                dropdown.style.maxHeight = '0';
+                await populateDropdown();
+                dropdown.classList.add('show');
             }
         }
 
-        // Attach event listener to the button
+        // Event Listeners
         document.querySelector('.floating-button').addEventListener('click', toggleDropdown);
-
-        // Close the dropdown if clicked outside
         window.addEventListener('click', function(event) {
             const dropdown = document.getElementById('dropdownContainer');
             const button = document.querySelector('.floating-button');
             if (!dropdown.contains(event.target) && event.target !== button) {
-                dropdown.style.maxHeight = '0';
+                dropdown.classList.remove('show');
             }
         });
 
