@@ -32,29 +32,29 @@ with app.app_context():
 def home():
     return render_template("index.html")
 
-@app.route("/add", methods=["GET", "POST"])
-@csrf.exempt
-def add_startup():
-    if request.method == "POST":
-        data = request.get_json()
-        name = data["name"]
-        yc_batch = data["yc_batch"]
-        funding = data["funding"]
-        team_size = data["team_size"]
-        linkedin = data["linkedin"]
+# @app.route("/add", methods=["GET", "POST"])
+# @csrf.exempt
+# def add_startup():
+#     if request.method == "POST":
+#         data = request.get_json()
+#         name = data["name"]
+#         yc_batch = data["yc_batch"]
+#         funding = data["funding"]
+#         team_size = data["team_size"]
+#         linkedin = data["linkedin"]
 
-        new_startup = YcStartup(
-            name=name,
-            yc_batch=yc_batch,
-            funding=funding,
-            team_size=team_size,
-            linkedin=linkedin
-        )
+#         new_startup = YcStartup(
+#             name=name,
+#             yc_batch=yc_batch,
+#             funding=funding,
+#             team_size=team_size,
+#             linkedin=linkedin
+#         )
 
-        db.session.add(new_startup)
-        db.session.commit()
+#         db.session.add(new_startup)
+#         db.session.commit()
 
-    return jsonify({"message": "Startup added successfully"}), 200
+#     return jsonify({"message": "Startup added successfully"}), 200
 
 
 if __name__ == "__main__":
